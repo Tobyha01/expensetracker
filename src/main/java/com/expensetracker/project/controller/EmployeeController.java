@@ -30,17 +30,19 @@ public class EmployeeController {
     
   @GetMapping("/employee/all")
     public ResponseEntity<List<Employee>> findAll() {
+
       try{
         List<Employee> employeeList = new ArrayList<>();
+        employeeRepository.findAll().forEach(employeeList::add);
 
         if(employeeList.isEmpty()){
           return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        employeeRepository.findAll().forEach(employeeList::add);
-        return new ResponseEntity<>(employeeService.findAllEmployees(), HttpStatus.OK);
+        // return new ResponseEntity<>(employeeRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(employeeList, HttpStatus.OK);
       }
-
+  
       catch(Error error){
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }

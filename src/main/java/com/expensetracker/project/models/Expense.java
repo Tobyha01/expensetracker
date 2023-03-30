@@ -2,6 +2,9 @@ package com.expensetracker.project.models;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.*;
@@ -31,7 +34,8 @@ public class Expense {
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;
+    @JsonBackReference
+    public Employee employee;
 
     public Expense(){
 

@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.expensetracker.project.repositorys.EmployeeRepository;
 import com.expensetracker.project.repositorys.ExpenseRepository;
-// import com.expensetracker.project.models.*;
 
 @SpringBootApplication
 public class ProjectApplication {

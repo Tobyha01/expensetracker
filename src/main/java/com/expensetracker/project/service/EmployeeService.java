@@ -14,13 +14,11 @@ public class EmployeeService{
     @Autowired
     ExpenseRepository expenseRepository;
     
-    @Autowired
     public List<Employee> findAllEmployees() {
         return employeeRepository.findAll();
     }
     
-    @Autowired
-    public Employee findEmployee(Long id){
+    public Employee findEmployee(int id){
         return employeeRepository.findById(id).get();
     }
 }
