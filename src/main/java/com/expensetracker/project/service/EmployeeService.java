@@ -1,18 +1,17 @@
 package com.expensetracker.project.service;
 
-import org.springframework.stereotype.Service;
-import com.expensetracker.project.repositorys.*;
 import com.expensetracker.project.models.*;
+import com.expensetracker.project.repositorys.*;
+
+import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
+import java.lang.Long;
 
 @Service
 public class EmployeeService{
     @Autowired
     EmployeeRepository employeeRepository;
-
-    @Autowired
-    ExpenseRepository expenseRepository;
     
     @Autowired
     public List<Employee> findAllEmployees() {

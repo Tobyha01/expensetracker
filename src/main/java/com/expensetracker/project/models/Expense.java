@@ -29,10 +29,6 @@ public class Expense {
         this.amount = inputAmount;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;
-
     public Expense(){
 
     }

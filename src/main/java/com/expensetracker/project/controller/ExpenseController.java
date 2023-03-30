@@ -5,15 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.expensetracker.project.models.Employee;
-// import com.expensetracker.project.service.EmployeeService;
-import com.expensetracker.project.repositorys.EmployeeRepository;
-
 import com.expensetracker.project.models.Expense;
 import com.expensetracker.project.service.ExpenseService;
 import com.expensetracker.project.repositorys.ExpenseRepository;
-
-// import com.expensetracker.project.exception.ResourceNotFoundException;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,11 +22,6 @@ import java.util.ArrayList;
 
 @RestController
 public class ExpenseController {
-    
-    @Autowired
-    EmployeeRepository employeeRepository;
-
-
     
     @Autowired
     ExpenseRepository expenseRepository;
@@ -56,36 +45,8 @@ public class ExpenseController {
         }
     }
 
-    // @GetMapping("/tutorials/{tutorialId}/comments")
-    // public ResponseEntity<List<Comment>> getAllCommentsByTutorialId(@PathVariable(value = "tutorialId") int tutorialId) {    
-    //     Tutorial tutorial = tutorialRepository.findById(tutorialId)
-    //     .orElseThrow(() -> new ResourceNotFoundException("Not found Tutorial with id = " + tutorialId));
-
-    //     List<Comment> comments = new ArrayList<Comment>();
-    //     comments.addAll(tutorial.getComments());
-
-    //     return new ResponseEntity<>(comments, HttpStatus.OK);
-    // }
-
-
-    @GetMapping("/employee/{employeeId}/expense")
-    public ResponseEntity<List<Expense>> getAllExpenseByEmployeeId(@PathVariable(value = "employeeId") int employeeId){
-            Optional<Employee> employee = employeeRepository.findById(employeeId);
-            // .orElseThrow(() -> new ResourceNotFoundException("Not found Employee with id = " + employeeId));
-            
-            List<Expense> expenses = new ArrayList<Expense>(employee.get().expenses);
-            
-            return new ResponseEntity<>(expenses, HttpStatus.OK);
-    }
-
-            // if(!employeeRepository.existsById(employeeId)){
-            //     throw new ResourceNotFoundException("Not found Employee with id = " + employeeId);
-            //     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            // }
-            
-
     @GetMapping("expense/{id}")
-    public ResponseEntity<Expense> getExpenseById(@PathVariable int id){
+    public ResponseEntity<Expense> getExpenseById(@PathVariable Long id){
         try{
             Optional<Expense> expenseData = expenseRepository.findById(id);
 
@@ -110,7 +71,7 @@ public class ExpenseController {
     }
 
     @PutMapping("expense/update/{id}")
-    public ResponseEntity<Expense> updateExpense(@PathVariable int id, @RequestBody Expense newExpenseData){
+    public ResponseEntity<Expense> updateExpense(@PathVariable Long id, @RequestBody Expense newExpenseData){
         try{
             Optional<Expense> oldExpenseData = expenseRepository.findById(id);
 
@@ -129,7 +90,7 @@ public class ExpenseController {
     }
 
     @DeleteMapping("expense/delete/{id}")
-    public ResponseEntity<Expense> deleteExpense(@PathVariable int id){
+    public ResponseEntity<Expense> deleteExpense(@PathVariable Long id){
         try{
 
             if(expenseRepository.findById(id).isPresent()){
