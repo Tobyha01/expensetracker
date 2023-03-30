@@ -23,10 +23,10 @@ import java.util.ArrayList;
 @RestController
 public class EmployeeController {
     @Autowired
-    EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository;
     
     @Autowired
-    EmployeeService employeeService;
+    private EmployeeService employeeService;
     
   @GetMapping("/employee/all")
     public ResponseEntity<List<Employee>> findAll() {
@@ -48,7 +48,7 @@ public class EmployeeController {
     }
 
   @GetMapping("/employee/{id}")
-  public ResponseEntity<Employee> getEmployeeById(@PathVariable int id){
+  public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id){
     try{
       Optional<Employee> employeeData = employeeRepository.findById(id);
   
@@ -76,7 +76,7 @@ public class EmployeeController {
   }
 
   @PutMapping("/employee/update/{id}")
-  public ResponseEntity<Employee> updateEmployee(@PathVariable int id, @RequestBody Employee newEmployeeData){
+  public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee newEmployeeData){
     try{
       Optional<Employee> oldEmployeeData = employeeRepository.findById(id);
 
@@ -96,7 +96,7 @@ public class EmployeeController {
   }
   
   @DeleteMapping("/employee/delete/{id}")
-  public ResponseEntity<Employee> deleteEmployee(@PathVariable int id){
+  public ResponseEntity<Employee> deleteEmployee(@PathVariable Long id){
     try{
       
       if(employeeRepository.findById(id).isPresent()){

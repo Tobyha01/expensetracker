@@ -4,14 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-// import java.util.List;
-import java.util.Set;
-
 import javax.persistence.*;
-
-// import java.util.HashSet;
-// import java.util.Set;
 
 @Entity
 public class Employee {
@@ -27,10 +20,6 @@ public class Employee {
   @Column(/* name = "email" */)
   private String email;
 
-  @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-  public Set<Expense> expenses;
-  // private Set<Expense> expenses = new HashSet<>();
-  
   public Employee(){
 
   }
