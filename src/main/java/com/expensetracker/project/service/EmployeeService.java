@@ -1,10 +1,12 @@
 package com.expensetracker.project.service;
 
-import org.springframework.stereotype.Service;
-import com.expensetracker.project.repositorys.*;
 import com.expensetracker.project.models.*;
+import com.expensetracker.project.repositorys.*;
+
+import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
+import java.lang.Long;
 
 @Service
 public class EmployeeService{
@@ -18,7 +20,7 @@ public class EmployeeService{
         return employeeRepository.findAll();
     }
     
-    public Employee findEmployee(int id){
+    public Employee findEmployee(long id){
         return employeeRepository.findById(id).get();
     }
 }

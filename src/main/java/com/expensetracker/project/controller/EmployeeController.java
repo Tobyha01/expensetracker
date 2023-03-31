@@ -1,116 +1,116 @@
 package com.expensetracker.project.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.expensetracker.project.models.Employee;
-import com.expensetracker.project.repositorys.EmployeeRepository;
-import com.expensetracker.project.service.EmployeeService;
-
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+// import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
+
+
+import com.expensetracker.project.exception.ResourceNotFoundException;
+import com.expensetracker.project.models.Employee;
+import com.expensetracker.project.repositorys.EmployeeRepository;
 
 @RestController
 public class EmployeeController {
-    @Autowired
-    EmployeeRepository employeeRepository;
-    
-    @Autowired
-    EmployeeService employeeService;
-    
+
+  @Autowired
+  EmployeeRepository employeeRepository;
+
   @GetMapping("/employee/all")
-    public ResponseEntity<List<Employee>> findAll() {
+  public ResponseEntity<List<Employee>> getAllEmployees(Long id) {
+    try{
+      List<Employee> employees = new ArrayList<Employee>();
+      employeeRepository.findAll().forEach(employees::add);
 
-      try{
-        List<Employee> employeeList = new ArrayList<>();
-        employeeRepository.findAll().forEach(employeeList::add);
-
-        if(employeeList.isEmpty()){
-          return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-
-        // return new ResponseEntity<>(employeeRepository.findAll(), HttpStatus.OK);
-        return new ResponseEntity<>(employeeList, HttpStatus.OK);
+      if (employees.isEmpty()) {
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
       }
-  
-      catch(Error error){
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-    
+      return new ResponseEntity<>(employees, HttpStatus.OK);
     }
+    catch(Exception error){
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }  
+
+  }
 
   @GetMapping("/employee/{id}")
-  public ResponseEntity<Employee> getEmployeeById(@PathVariable int id){
-    try{
-      Optional<Employee> employeeData = employeeRepository.findById(id);
-  
-      if(employeeData.isEmpty()){
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
-      return new ResponseEntity<>(employeeData.get(), HttpStatus.OK);
+  public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+    Employee employee = employeeRepository.findById(id)
+      .orElseThrow(() -> new ResourceNotFoundException("Not found employee with id: " + id));
 
-    }
-    
-    catch(Error error){
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  
+    return new ResponseEntity<>(employee, HttpStatus.OK);
   }
 
   @PostMapping("/employee/add")
-  public ResponseEntity<Employee> addEmployee(@RequestBody Employee employee){
-    try{
-      return new ResponseEntity<>(employeeRepository.save(employee), HttpStatus.OK);
+  public ResponseEntity<Employee> createEmployee(@RequestBody Employee newEmployee) {
+    try {
+      return new ResponseEntity<>(employeeRepository.save(newEmployee), HttpStatus.CREATED);
     }
-    catch(Error error){
+    catch(Exception error){
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @PutMapping("/employee/update/{id}")
-  public ResponseEntity<Employee> updateEmployee(@PathVariable int id, @RequestBody Employee newEmployeeData){
-    try{
-      Optional<Employee> oldEmployeeData = employeeRepository.findById(id);
-
-      if(oldEmployeeData.isPresent()){
-        Employee updatedEmployeeData = oldEmployeeData.get();
-        updatedEmployeeData.setUsername(newEmployeeData.getUsername());
-        updatedEmployeeData.setEmail(newEmployeeData.getEmail());
-        return new ResponseEntity<>(employeeRepository.save(updatedEmployeeData), HttpStatus.OK);
-      }
-
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    catch(Error error){
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-  
-  @DeleteMapping("/employee/delete/{id}")
-  public ResponseEntity<Employee> deleteEmployee(@PathVariable int id){
-    try{
-      
-      if(employeeRepository.findById(id).isPresent()){
-        employeeRepository.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-      }
-
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+  public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee newEmployeeData) {
+    Employee employeeData = employeeRepository.findById(id)
+      .orElseThrow(() -> new ResourceNotFoundException("Not found Employee with id: " + id));
     
-    catch(Error error){
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    employeeData.setUsername(newEmployeeData.getUsername());
+    employeeData.setEmail(newEmployeeData.getEmail());
+    // oldEmployee.setPublished(employee.isPublished());
+    
+    return new ResponseEntity<>(employeeRepository.save(employeeData), HttpStatus.OK);
+  }
+
+  @DeleteMapping("/employee/delete/{id}")
+  public ResponseEntity<Employee> deleteEmployee(@PathVariable Long id) {
+    employeeRepository.findById(id)
+      .orElseThrow(() -> new ResourceNotFoundException("Not found employee with id: " +id));
+
+    employeeRepository.deleteById(id);
+    
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
+
+  @DeleteMapping("/employee/delete/all")
+  public ResponseEntity<HttpStatus> deleteAllEmployees() {
+    try{
+      List<Employee> employees = new ArrayList<Employee>();
+      employeeRepository.findAll().forEach(employees::add);
+
+      if (employees.isEmpty()) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
+      employeeRepository.deleteAll(employees);
+      return new ResponseEntity<>(HttpStatus.OK);
     }
-  } 
+    catch(Exception error){
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }  
+  }
+
+//   @GetMapping("/tmployees/published")
+//   public ResponseEntity<List<Employee>> findByPublished() {
+//     List<Employee> tmployees = employeeRepository.findByPublished(true);
+
+//     if (tmployees.isEmpty()) {
+//       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//     }
+    
+//     return new ResponseEntity<>(tmployees, HttpStatus.OK);
+//   }
+
 }

@@ -8,24 +8,25 @@ import javax.persistence.Id;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.Set;
+import java.lang.reflect.Field;
 
 import javax.persistence.*;
 
 @Entity
 public class Employee {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "employee_generator")
-    
-    @Column(name = "Id")
-    private Integer id;
-    
-    @Column(name = " username")
-    private String username;
-    
-    @Column(name = "email")
-    private String email;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  
+  @Column(name = "Id")
+  private Long id;
+  
+  @Column(name = " username")
+  private String username;
+  
+  @Column(name = "email")
+  private String email;
 
-    public Employee(){
+  public Employee(){
 
     }
 
@@ -33,14 +34,14 @@ public class Employee {
     @JsonManagedReference
     public Set<Expense> expenses;
 
-    public Employee (Integer id, String username, String email){
+    public Employee (Long id, String username, String email){
       this.id = id;
       this.username = username;
       this.email = email;
     }
 
 
-    public Integer getId(){
+    public Long getId(){
       return id;
     }
 
@@ -52,15 +53,15 @@ public class Employee {
       return email;
     }
 
-    public void setId(Integer id){
+    public void setId(Long id){
         this.id = id;
     }
 
-    public void setUsername(String username){
-      this.username = username;
-    }
-    
-    public void setEmail(String email){
-      this.email = email;
-    }
+  public void setUsername(String username){
+    this.username = username;
+  }
+  
+  public void setEmail(String email){
+    this.email = email;
+  }
 }
