@@ -13,12 +13,12 @@ public class ExpenseService{
     @Autowired
     ExpenseRepository expenseRepository;
 
-    @Autowired
+    
     public List<Expense> findallExpense(){
         return expenseRepository.findAll();
     }
     
-    @Autowired
+    
     public Expense findExpense(Long id){
         return expenseRepository.findById(id).get();
     }
