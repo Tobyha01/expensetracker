@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.expensetracker.project.models.Employee;
 import com.expensetracker.project.repositorys.EmployeeRepository;
 
 import com.expensetracker.project.models.Expense;
@@ -58,51 +59,31 @@ public class ExpenseController {
         return new ResponseEntity<>(expenseData, HttpStatus.OK);
     }
     
-    @GetMapping("/employee/{employeeId}/expense")
-    public ResponseEntity<List<Expense>> getAllExpenseByEmployeeId(@PathVariable(value = "employeeId") int employeeId){
-        try{
-            Optional<Employee> employee = employeeRepository.findById(employeeId);
-            List<Expense> expenses = new ArrayList<Expense>(employee.get().expenses);
+    @GetMapping("/employee/{employeeid}/expense")
+    public ResponseEntity<List<Expense>> getAllExpenseByemployeeid(@PathVariable Long employeeid){
 
+        Employee employee = employeeRepository.findById(employeeid)
+          .orElseThrow(() -> new ResourceNotFoundException("Not found employee's expenses with id: " + employeeid));
+
+            List<Expense> expenses = new ArrayList<Expense>();
+            expenses.addAll(employee.getExpenses());
+            
             if(expenses.isEmpty()){
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             
             return new ResponseEntity<>(expenses, HttpStatus.OK);
-        }
-        catch(Error error){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
-    @PostMapping("/expense/add")
-    public ResponseEntity<Expense> addExpense(@RequestBody Expense expense){
-        try{
-            return new ResponseEntity<>(expenseRepository.save(expense), HttpStatus.OK);
-        }
-        catch(Exception error){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
-    @PostMapping("/employee/{employeeId}/add/expense")
-    public ResponseEntity<Expense> addEmployeeExpense(@PathVariable(value = "employeeId") int employeeId, @RequestBody Expense expenseRequest){
-        try{
-            Optional<Employee> employee = employeeRepository.findById(employeeId);/* .map(employee -> {
-                employee.getExpenses().expense.add(expenseRequest);
-                return expenseRepository.save(expenseRequest);
-                }); */
-            // List<Expense> expense = new ArrayList<Expense>(employee.get().expenses);
-            List<Expense> expense = new ArrayList<Expense>(employee.save().expense);
-            // if(expense.isEmpty()){
-            //     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            // }
-            
-            return new ResponseEntity<>(expense, HttpStatus.OK);
-        }
-        catch(Error error){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping("/employee/{employeeid}/add/expense")
+    public ResponseEntity<Expense> addEmployeeExpense(@PathVariable Long employeeid, @RequestBody Expense expenseRequest){
+        
+        Expense expense = employeeRepository.findById(employeeid).map(employee -> {
+            employee.getExpenses().add(expenseRequest);
+            return expenseRepository.save(expenseRequest);
+        }).orElseThrow(() -> new ResourceNotFoundException("Not found employee with id: " +employeeid));
+
+        return new ResponseEntity<>(expense, HttpStatus.OK);
     }
 
     @PutMapping("/expense/update/{id}")
@@ -123,6 +104,20 @@ public class ExpenseController {
           .orElseThrow(() -> new ResourceNotFoundException("Not found Expense with id: " +id));
 
         expenseRepository.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/employee/delete/{employeeid}/expenses")
+    public ResponseEntity<List<Expense>> deleteAllEmployeeExpenses(@PathVariable Long employeeid){
+        Employee employee = employeeRepository.findById(employeeid)
+          .orElseThrow(() -> new ResourceNotFoundException("Not found employee with id : " +employeeid));
+        employee.removeExpenses();
+        employeeRepository.save(employee);
+
+        if(employee.getExpenses().isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

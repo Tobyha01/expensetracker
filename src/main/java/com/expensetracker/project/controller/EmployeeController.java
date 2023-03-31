@@ -1,9 +1,7 @@
 package com.expensetracker.project.controller;
 
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-// import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
-import com.expensetracker.project.exception.ResourceNotFoundException;
 import com.expensetracker.project.models.Employee;
 import com.expensetracker.project.repositorys.EmployeeRepository;
+import com.expensetracker.project.exception.ResourceNotFoundException;
 
 @RestController
 public class EmployeeController {
@@ -101,16 +98,4 @@ public class EmployeeController {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }  
   }
-
-//   @GetMapping("/tmployees/published")
-//   public ResponseEntity<List<Employee>> findByPublished() {
-//     List<Employee> tmployees = employeeRepository.findByPublished(true);
-
-//     if (tmployees.isEmpty()) {
-//       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//     }
-    
-//     return new ResponseEntity<>(tmployees, HttpStatus.OK);
-//   }
-
 }

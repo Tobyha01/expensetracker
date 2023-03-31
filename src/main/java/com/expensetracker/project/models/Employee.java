@@ -4,13 +4,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.lang.reflect.Field;
 
-import javax.persistence.*;
 
 @Entity
 public class Employee {
@@ -18,7 +18,7 @@ public class Employee {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   
   @Column(name = "Id")
-  private Long id;
+  private long id;
   
   @Column(name = " username")
   private String username;
@@ -28,40 +28,53 @@ public class Employee {
 
   public Employee(){
 
-    }
+  }
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JsonManagedReference
-    public Set<Expense> expenses;
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+  @JoinColumn(name = "employeeid")
+  @JsonManagedReference
+  private Set<Expense> expenses = new HashSet<>();
 
-    public Employee (Long id, String username, String email){
+  public Employee (long id, String username, String email){
+    this.id = id;
+    this.username = username;
+    this.email = email;
+  }
+
+
+  public long getId(){
+    return id;
+  }
+
+  public String getUsername(){
+    return username;
+  }
+
+  public String getEmail(){
+    return email;
+  }
+
+  public Set<Expense> getExpenses(){
+    return expenses;
+  }
+  
+  public void setId(long id){
       this.id = id;
-      this.username = username;
-      this.email = email;
-    }
-
-
-    public Long getId(){
-      return id;
-    }
-
-    public String getUsername(){
-      return username;
-    }
-
-    public String getEmail(){
-      return email;
-    }
-
-    public void setId(Long id){
-        this.id = id;
-    }
+  }
 
   public void setUsername(String username){
     this.username = username;
   }
-  
+
   public void setEmail(String email){
     this.email = email;
+  }
+
+  public void setExpenses(Set<Expense> expenses) {
+    this.expenses = expenses;
+  }
+
+  public void removeExpenses() {
+    this.expenses.clear();
   }
 }

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.expensetracker.project.models.Expense;
 import com.expensetracker.project.repositorys.ExpenseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
