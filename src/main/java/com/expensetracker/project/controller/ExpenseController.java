@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.expensetracker.project.repositorys.EmployeeRepository;
-
+import com.expensetracker.project.exception.ResourceNotFoundException;
+import com.expensetracker.project.models.Employee;
 import com.expensetracker.project.models.Expense;
 import com.expensetracker.project.service.ExpenseService;
 import com.expensetracker.project.repositorys.ExpenseRepository;
@@ -28,8 +29,6 @@ public class ExpenseController {
     
     @Autowired
     EmployeeRepository employeeRepository;
-
-
     
     @Autowired
     ExpenseRepository expenseRepository;
@@ -53,6 +52,7 @@ public class ExpenseController {
         }
     }
 
+
     @GetMapping("expense/{id}")
     public ResponseEntity<Expense> getExpenseById(@PathVariable int id){
         try{
@@ -68,6 +68,23 @@ public class ExpenseController {
         }
     }
     
+    @GetMapping("/employee/{employeeId}/expense")
+    public ResponseEntity<List<Expense>> getAllExpenseByEmployeeId(@PathVariable(value = "employeeId") int employeeId){
+        try{
+            Optional<Employee> employee = employeeRepository.findById(employeeId);
+            List<Expense> expenses = new ArrayList<Expense>(employee.get().expenses);
+
+            if(expenses.isEmpty()){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            
+            return new ResponseEntity<>(expenses, HttpStatus.OK);
+        }
+        catch(Error error){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
     @PostMapping("expense/add")
     public ResponseEntity<Expense> addExpense(@RequestBody Expense expense){
         try{
@@ -76,6 +93,39 @@ public class ExpenseController {
         catch(Error error){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping("/employee/{employeeId}/add/expense")
+    public ResponseEntity<Expense> addEmployeeExpense(@PathVariable(value = "employeeId") int employeeId, @RequestBody Expense expenseRequest){
+        try{
+            Optional<Employee> employee = employeeRepository.findById(employeeId);/* .map(employee -> {
+                employee.getExpenses().expense.add(expenseRequest);
+                return expenseRepository.save(expenseRequest);
+                }); */
+            // List<Expense> expense = new ArrayList<Expense>(employee.get().expenses);
+            List<Expense> expense = new ArrayList<Expense>(employee.save().expense);
+            // if(expense.isEmpty()){
+            //     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            // }
+            
+            return new ResponseEntity<>(expense, HttpStatus.OK);
+        }
+        catch(Error error){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/employee/{employeeId}/add/expense")
+    public ResponseEntity<Expense> createExpense(@PathVariable(value = "employeeId") int employeeId, @RequestBody Expense expenseRequest) {
+    
+        Expense expense = employeeRepository.findById(employeeId).map(employee -> {
+    
+        expenseRequest.setEmployee(employee);
+        return expenseRepository.save(expenseRequest);
+    
+        }).orElseThrow(() -> new ResourceNotFoundException("Not found Customer with id = " + employeeId));
+
+        return new ResponseEntity<>(expense, HttpStatus.CREATED);
     }
 
     @PutMapping("expense/update/{id}")
