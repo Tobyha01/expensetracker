@@ -4,9 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import java.lang.reflect.Field;
-
 import javax.persistence.*;
 
 @Entity
@@ -14,13 +11,13 @@ public class Employee {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   
-  @Column(/* name = "Id" */)
+  @Column()
   private Long id;
   
-  @Column(/* name = " username" */)
+  @Column()
   private String username;
   
-  @Column(/* name = "email" */)
+  @Column()
   private String email;
 
   public Employee(){
